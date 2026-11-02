@@ -1,0 +1,46 @@
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "check-yaml" },
+  { id = "check-toml" },
+  { id = "check-json" },
+  { id = "check-json5" },
+  { id = "trailing-whitespace" },
+  { id = "end-of-file-fixer" },
+  { id = "check-added-large-files" },
+  { id = "check-merge-conflict" },
+  { id = "check-case-conflict" },
+  { id = "mixed-line-ending", args = ["--fix=lf"] },
+  { id = "fix-byte-order-marker" },
+  { id = "check-executables-have-shebangs" },
+  { id = "check-shebang-scripts-are-executable", exclude = "^\\.claude/skills/" },
+  # { id = "no-commit-to-branch", args = ["--branch", "main", "--branch", "master"] },
+]
+
+[[repos]]
+repo = "https://github.com/adrienverge/yamllint"
+rev = "v1.35.1"
+hooks = [
+  { id = "yamllint", args = ["-c=.yamllint.yaml"] },
+]
+
+[[repos]]
+repo = "https://github.com/gitleaks/gitleaks"
+rev = "v8.21.2"
+hooks = [
+  { id = "gitleaks" },
+]
+
+[[repos]]
+repo = "https://github.com/shellcheck-py/shellcheck-py"
+rev = "v0.11.0.1"
+hooks = [
+  { id = "shellcheck" },
+]
+
+[[repos]]
+repo = "https://github.com/igorshubovych/markdownlint-cli"
+rev = "v0.48.0"
+hooks = [
+  { id = "markdownlint", args = ["--fix", "--disable=MD013"], exclude = "^(CHANGELOG\\.md|\\.claude/skills/)" },
+]

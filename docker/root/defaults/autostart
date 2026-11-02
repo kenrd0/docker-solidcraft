@@ -1,0 +1,8 @@
+#!/bin/bash
+# shellcheck shell=bash
+export SOLIDCRAFT_WAYLAND=0
+args=()
+if [[ -n "${SEALSKIN_FILE:-}" ]]; then
+  args+=("$SEALSKIN_FILE")
+fi
+exec /usr/bin/solidcraft "${args[@]}"

@@ -1,0 +1,81 @@
+---
+name: Build and Push Docker Image (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Dockerfile to use (relative to ./docker context)'
+        required: false
+        type: string
+        default: Dockerfile
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-push:
+    runs-on: docker
+    container: ghcr.io/catthehacker/ubuntu:act-latest-20260508@sha256:fe2762e81938afa7fe17aef88a4761a2e024ba81591b43a425100600d180d8e7
+
+    steps:
+      - name: Checkout code
+        uses: https://github.com/actions/checkout@v7.0.1
+
+      - name: Install just
+        uses: https://git.hlan.in/kenr/action-setup-just@main
+        with:
+          github-token: ${{ secrets.USER_GITHUB_TOKEN }}
+
+      - name: Secretspec
+        uses: https://github.com/cachix/secretspec-action@main
+        env:
+          VAULT_ADDR: ${{ vars.VAULT_ADDR }}
+          VAULT_ROLE_ID: ${{ vars.VAULT_ROLE_ID }}
+          VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+        with:
+          profile: default
+          provider: vault_approle
+
+      - name: Extract SolidCraft version from Dockerfile
+        env:
+          DOCKERFILE: ${{ inputs.dockerfile || 'Dockerfile' }}
+        run: |
+          VERSION=$(just docker::version)
+          if [ -z "$VERSION" ]; then
+            echo "Could not extract version from docker/${DOCKERFILE}"
+            exit 1
+          fi
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "SolidCraft version: ${VERSION}"
+
+      - name: Set up Docker Buildx
+        uses: https://github.com/docker/setup-buildx-action@v4
+        with:
+          driver: docker
+
+      - name: Login to Forgejo Container Registry
+        uses: https://github.com/docker/login-action@v4
+        with:
+          registry: git.hlan.in
+          username: ${{ env.CI_REGISTRY_USER }}
+          password: ${{ env.CI_REGISTRY_TOKEN }}
+
+      - name: Build and push
+        uses: https://github.com/docker/build-push-action@v7.4.0
+        with:
+          context: ./docker
+          file: ./docker/${{ inputs.dockerfile || 'Dockerfile' }}
+          push: true
+          tags: |
+            git.hlan.in/${{ env.FORGEJO_REPOSITORY }}:latest
+            git.hlan.in/${{ env.FORGEJO_REPOSITORY }}:${{ env.VERSION }}
+            git.hlan.in/${{ env.FORGEJO_REPOSITORY_OWNER }}/solidcraft:${{ env.VERSION }}
+
+      - name: Verify built image
+        run: |
+          IMAGE="git.hlan.in/${{ env.FORGEJO_REPOSITORY }}:${{ env.VERSION }}"
+          docker pull "${IMAGE}"
+          docker run --rm --entrypoint /usr/bin/solidcraft-cli "${IMAGE}" --version

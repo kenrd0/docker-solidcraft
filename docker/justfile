@@ -1,0 +1,2 @@
+version dockerfile="Dockerfile":
+    @awk -F= '/^ARG SOLIDCRAFT_VERSION=/ { print $2; exit }' "{{ dockerfile }}"

@@ -1,0 +1,31 @@
+apps:
+  - id: solidcraft
+    name: SolidCraft
+    logo: >-
+      https://raw.githubusercontent.com/tangency-labs/solidcraft/main/assets/icons/app/linux/exports/hicolor/128x128/apps/io.tangencylabs.solidcraft.png
+    url: https://solidcraft.io/
+    provider: docker
+    provider_config:
+      image: git.hlan.in/kenr/docker-solidcraft:latest
+      # SealSkin proxies HTTP on 3000; Selkies' HTTPS endpoint is on 3001.
+      port: 3000
+      type: desktop
+      autostart: false
+      url_support: false
+      open_support: true
+      extensions:
+        - solidcraft
+        - sc
+        - step
+        - stp
+        - iges
+        - igs
+        - 3mf
+        - stl
+        - obj
+        - glb
+        - gltf
+        - fcstd
+        - 3dm
+      dri3_support: true
+      nvidia_support: true

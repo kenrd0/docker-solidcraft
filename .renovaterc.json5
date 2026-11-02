@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    extends: [
+    "config:recommended",
+    "docker:enableMajor",
+    "local>renovate-bot/renovate-config//.renovate/automerge/docker.json5",
+    "local>renovate-bot/renovate-config//.renovate/automerge/github-actions.json5",
+  ],
+
+  dependencyDashboard: false,
+  assignees: [
+    "renovate-bot"
+  ],
+  labels: [
+    "renovate"
+  ],
+}

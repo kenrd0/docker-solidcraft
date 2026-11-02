@@ -1,0 +1,4 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v1.0.10
+_src_path: ssh://git@git.hlan.in/kenr/copier-base.git
+name: docker-solidcraft
